@@ -1,0 +1,280 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Optional: Add animated background */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    filter: blur(20px);
+    z-index: -1;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.15);
+    /* Transparent white */
+    backdrop-filter: blur(10px);
+    /* Blur effect */
+    -webkit-backdrop-filter: blur(10px);
+    /* For Safari */
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    /* Subtle border */
+    width: 100%;
+    max-width: 450px;
+    padding: 40px 30px;
+    margin: 20px;
+}
+
+h1,
+h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: white;
+    /* Changed to white for better contrast on transparent background */
+    margin-bottom: 30px;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    /* Added text shadow for better readability */
+}
+
+h2 {
+    font-size: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    width: 100%;
+    position: relative;
+}
+
+/* Password field container */
+.password-field {
+    position: relative;
+}
+
+.password-field input {
+    padding-right: 45px;
+    /* Make space for the eye icon */
+}
+
+/* IMPROVED: More visible eye icon styles */
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #333;
+    /* Darker color for better visibility */
+    font-size: 20px;
+    /* Slightly larger */
+    transition: all 0.3s;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.8);
+    /* Light background */
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    /* Subtle shadow for depth */
+}
+
+.toggle-password:hover {
+    color: #5d4141;
+    background: rgb(255, 255, 255);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-password:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s;
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.9);
+    /* Slightly transparent white */
+    color: #333;
+    line-height: normal;
+}
+
+input:focus {
+    border-color: white;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+    background-color: white;
+}
+
+input::placeholder {
+    color: rgba(102, 102, 102, 0.7);
+    opacity: 1;
+}
+
+/* Ensure input fields are interactive */
+input:not(:disabled):not(:read-only) {
+    cursor: text;
+}
+
+.btn {
+    width: 100%;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 20px;
+    line-height: normal;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+    border-color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.links {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.links a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-block;
+    margin: 0 10px;
+    padding: 5px;
+    transition: all 0.3s;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.links a:hover {
+    text-decoration: underline;
+    transform: scale(1.05);
+}
+
+.forgot-link {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.forgot-link a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 5px;
+    display: inline-block;
+    transition: all 0.3s;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.forgot-link a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    color: #ff6b6b;
+    font-size: 13px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: none;
+    padding-left: 5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    font-weight: 500;
+}
+
+.success-message {
+    color: #51cf66;
+    font-size: 13px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    display: none;
+    padding-left: 5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    font-weight: 500;
+}
+
+/* Responsive design for larger screens */
+@media screen and (min-width: 768px) {
+    .container {
+        max-width: 500px;
+        padding: 50px 40px;
+    }
+
+    h1 {
+        font-size: 32px;
+    }
+
+    h2 {
+        font-size: 28px;
+    }
+
+    input {
+        padding: 16px 18px;
+        font-size: 16px;
+    }
+
+    .btn {
+        padding: 16px;
+        font-size: 18px;
+    }
+}

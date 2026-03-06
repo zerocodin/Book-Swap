@@ -1,0 +1,102 @@
+/* Table Styles */
+.table-container {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e9edef;
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+.table-container h3,
+.table-container h4 {
+    color: #111b21;
+    margin-bottom: 15px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    text-align: left;
+    padding: 15px 10px;
+    border-bottom: 2px solid #f0f2f5;
+    color: #667781;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.data-table td {
+    padding: 15px 10px;
+    border-bottom: 1px solid #f0f2f5;
+    color: #111b21;
+}
+
+.data-table tr:hover {
+    background: #fafafa;
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.status-badge.active {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-badge.pending {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.status-badge.suspended {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.status-badge.post {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.status-badge.user_created {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+/* Admin Role Badges */
+.admin-role-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.admin-role-badge.super_admin {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.admin-role-badge.admin {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.admin-role-badge.viewer {
+    background: #e8f5e9;
+    color: #2e7d32;
+}

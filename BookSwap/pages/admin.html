@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BookSwap</title>
+    <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+    <!-- Admin CSS modules -->
+    <link rel="stylesheet" href="../styles/admin/base.css">
+    <link rel="stylesheet" href="../styles/admin/dashboard.css">
+    <link rel="stylesheet" href="../styles/admin/tables.css">
+    <link rel="stylesheet" href="../styles/admin/cards.css">
+    <link rel="stylesheet" href="../styles/admin/modals.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <!-- Admin Profile Header - Make profile clickable (ONLY ONE) -->
+            <div class="sidebar-header">
+                <div class="profile-section" style="cursor: pointer;" onclick="showProfileEdit()">
+                    <div class="profile-image" id="profileImage">
+                        <img src="../assets/default-avatar.png" alt="Profile" id="profileImg"
+                            onerror="this.src='../assets/default-avatar.png'">
+                    </div>
+                    <div class="profile-info">
+                        <h3 id="adminName">Loading...</h3>
+                        <span class="role-badge" id="adminRole">Super Admin</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search or start new command" id="searchInput">
+            </div>
+
+            <!-- Navigation Menu -->
+            <div class="nav-menu" id="navMenu">
+                <div class="nav-item active" data-page="dashboard">
+                    <div class="nav-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <div class="nav-content">
+                        <div class="nav-title">Dashboard</div>
+                        <div class="nav-subtitle">Analytics & Overview</div>
+                    </div>
+                    <div class="nav-badge" id="dashboardBadge"></div>
+                </div>
+
+                <div class="nav-item" data-page="users">
+                    <div class="nav-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="nav-content">
+                        <div class="nav-title">Users Management</div>
+                        <div class="nav-subtitle">Manage all users</div>
+
+                    </div>
+                    <div class="nav-badge" id="usersBadge">0</div>
+                </div>
+
+                <div class="nav-item" data-page="posts">
+                    <div class="nav-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="nav-content">
+                        <div class="nav-title">Posts Management</div>
+                        <div class="nav-subtitle">Manage all posts</div>
+                    </div>
+                    <div class="nav-badge" id="postsBadge">0</div>
+                </div>
+
+                <div class="nav-item" data-page="manage-admins">
+                    <div class="nav-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="nav-content">
+                        <div class="nav-title">Manage Admins</div>
+                        <div class="nav-subtitle">Add, edit, remove admins</div>
+                    </div>
+                    <div class="nav-badge" id="adminsBadge">0</div>
+                </div>
+
+                <div class="nav-item" data-page="settings">
+                    <div class="nav-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="nav-content">
+                        <div class="nav-title">Settings</div>
+                        <div class="nav-subtitle">System configuration</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logout Button at bottom -->
+            <div class="logout-section">
+                <div class="nav-item logout" onclick="handleLogout()">
+                    <div class="nav-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <div class="nav-content">
+                        <div class="nav-title">Logout</div>
+                        <div class="nav-subtitle">Sign out from admin</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Content Area -->
+        <div class="main-content">
+            <!-- Content Header -->
+            <div class="content-header" id="contentHeader">
+                <h2 id="currentPageTitle">Dashboard</h2>
+                <!-- In the header-actions section, replace with: -->
+                <div class="header-actions">
+                    <!-- Search Input (initially hidden) -->
+                    <div class="header-search" id="headerSearch" style="display: none;">
+                        <i class="fas fa-search search-icon" style="left: 15px;"></i>
+                        <input type="text" class="search-input" placeholder="Search users by name or email..."
+                            id="globalSearchInput" style="width: 300px; padding-left: 40px;">
+                    </div>
+                    <!-- Refresh Button -->
+                    <button class="action-btn" id="refreshBtn" onclick="refreshCurrentPage()" title="Refresh">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Area - Dynamic content loads here -->
+            <div class="content-area" id="contentArea">
+                <div class="loading-indicator" id="loadingIndicator">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals Container -->
+    <div class="modal-container" id="modalContainer"></div>
+
+    <script>
+    (function() {
+        function setProfileImage() {
+            try {
+                const userStr = localStorage.getItem('user');
+                if (!userStr) return;
+                
+                const user = JSON.parse(userStr);
+                if (!user?.profile_image || 
+                    user.profile_image === 'null' || 
+                    user.profile_image === '' || 
+                    user.profile_image === 'default.png') {
+                    return;
+                }
+                
+                // Extract filename
+                let filename = user.profile_image;
+                if (filename.includes('/')) {
+                    filename = filename.split('/').pop();
+                }
+                
+                const imageUrl = `http://localhost/book_swap_api/profile_images/${filename}`;
+                const img = document.getElementById('profileImg');
+                
+                if (img) {
+                    // Preload the image
+                    const preloader = new Image();
+                    preloader.onload = function() {
+                        img.src = this.src;
+                    };
+                    preloader.onerror = function() {
+                        console.log('Preloaded image failed, keeping default');
+                        // Keep the default image
+                    };
+                    preloader.src = imageUrl;
+                }
+            } catch (e) {
+                console.warn('Profile image setup failed:', e);
+            }
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setProfileImage);
+        } else {
+            setProfileImage();
+        }
+    })();
+</script>
+
+    <!-- Add this line before other admin scripts -->
+    <script src="../renderer/admin/permissions.js"></script>
+
+    <!-- Then the existing scripts -->
+    <script src="../renderer/admin/utils.js"></script>
+    <script src="../renderer/admin/dashboard.js"></script>
+    <script src="../renderer/admin/users.js"></script>
+    <script src="../renderer/admin/posts.js"></script>
+    <script src="../renderer/admin/admins.js"></script>
+    <script src="../renderer/admin/settings.js"></script>
+    <script src="../renderer/admin/profile.js"></script>
+    <script src="../renderer/admin/index.js"></script>
+    <script src="../renderer/shared.js"></script>
+</body>
+
+</html>

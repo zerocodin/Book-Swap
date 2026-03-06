@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP - Electron Auth</title>
+    <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="../styles/main.css">
+</head>
+
+<body>
+    <div class="container">
+        <h2>Email Verification</h2>
+        <p style="color: white; text-align: center; margin-bottom: 20px;" id="emailDisplay"></p>
+
+        <div class="form-group">
+            <input type="text" id="otp" placeholder="Enter 6-digit OTP" maxlength="6">
+        </div>
+
+        <div class="form-group">
+            <button class="btn" onclick="handleVerifyOTP()">Verify Email</button>
+        </div>
+
+        <div class="links">
+            <a onclick="handleResendOTP()">Resend OTP</a>
+            <span style="color: white; margin: 0 5px;">|</span>
+            <a onclick="handleBackToLogin()">Back to Login</a>
+        </div>
+    </div>
+
+    <script src="../renderer/verify-otp.js"></script>
+</body>
+
+</html>
