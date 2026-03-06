@@ -1,0 +1,180 @@
+-- Create database
+CREATE DATABASE book_swap_db;
+USE book_swap_db;
+
+-- 1. users table
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    role ENUM('user', 'admin', 'super_admin') DEFAULT 'user',
+    profile_image VARCHAR(255),
+    password_hash VARCHAR(255) NOT NULL,
+    is_verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    otp_code VARCHAR(6),
+    otp_expiry TIMESTAMP NULL,
+    INDEX idx_email (email),
+    INDEX idx_created_at (created_at)
+) ENGINE=InnoDB;
+
+-- 2. user_profiles table
+CREATE TABLE user_profiles (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id VARCHAR(50),
+    department VARCHAR(100),
+    current_location VARCHAR(255),
+    permanent_location VARCHAR(255),
+    bio TEXT,
+    profile_image VARCHAR(255),
+    user_id INT UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_user_id (user_id),
+    INDEX idx_user_id (user_id),
+    INDEX idx_student_id (student_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- 3. posts table
+CREATE TABLE posts (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    book_name VARCHAR(255),
+    author VARCHAR(255),
+    batch_year VARCHAR(50),
+    department VARCHAR(100),
+    location VARCHAR(255),
+    contact_number VARCHAR(50),
+    type ENUM('SELL', 'GIVE', 'REQUEST') NOT NULL, -- REQUEST added later
+    price DECIMAL(10,2),
+    description TEXT,
+    is_anonymous BOOLEAN DEFAULT FALSE,
+    user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_type (type),
+    INDEX idx_created_at (created_at),
+    INDEX idx_book_name (book_name),
+    FULLTEXT INDEX ft_search (title, book_name, author, description),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+ALTER TABLE posts ADD COLUMN is_donated TINYINT(1) DEFAULT 0 AFTER is_anonymous;
+
+-- 4. post_images table
+CREATE TABLE post_images (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    post_id INT NOT NULL,
+    image_path VARCHAR(255) NOT NULL,
+    is_primary BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_post_id (post_id),
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- 5. comments table
+CREATE TABLE comments (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    content TEXT NOT NULL,
+    user_id INT NOT NULL,
+    post_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_post_id (post_id),
+    INDEX idx_created_at (created_at),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- 6. admin_metadata table
+CREATE TABLE admin_metadata (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    admin_since TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    access_level INT COMMENT '1-10 hierarchy level',
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- 7. admin_permissions table
+CREATE TABLE admin_permissions (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    permission_key VARCHAR(100) UNIQUE NOT NULL COMMENT 'e.g., CAN_DELETE_USERS, CAN_VIEW_REPORTS',
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+-- 8. admin_role_permissions table
+CREATE TABLE admin_role_permissions (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    role ENUM('user', 'admin', 'super_admin') NOT NULL COMMENT 'Matches users.role',
+    permission_id INT NOT NULL,
+    granted BOOLEAN DEFAULT TRUE,
+    UNIQUE KEY unique_role_permission (role, permission_id),
+    FOREIGN KEY (permission_id) REFERENCES admin_permissions(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- post_details view
+CREATE VIEW post_details AS
+SELECT 
+    p.*,
+    u.name as author_name,
+    u.email as author_email
+FROM posts p
+JOIN users u ON p.user_id = u.id
+WHERE p.is_anonymous = FALSE;
+
+-- user_details view
+CREATE VIEW user_details AS
+SELECT 
+    u.id, 
+    u.name, 
+    u.email, 
+    u.is_verified, 
+    u.created_at,
+    up.student_id,
+    up.department,
+    up.current_location,
+    up.permanent_location,
+    up.bio
+FROM users u
+LEFT JOIN user_profiles up ON u.id = up.user_id;
+
+-- Insert admin permissions
+INSERT INTO admin_permissions (permission_key, description) VALUES
+('view_users', 'Can view user list'),
+('create_users', 'Can create new users'),
+('edit_users', 'Can edit user details'),
+('delete_users', 'Can delete users'),
+('view_posts', 'Can view all posts'),
+('create_posts', 'Can create posts'),
+('edit_posts', 'Can edit posts'),
+('delete_posts', 'Can delete posts'),
+('manage_admins', 'Can manage other admins'),
+('grant_permissions', 'Can grant permissions to other admins'),
+('view_reports', 'Can view reports and analytics'),
+('manage_settings', 'Can manage system settings');
+
+-- Assign permissions to roles
+-- Super Admin gets all permissions
+INSERT INTO admin_role_permissions (role, permission_id, granted)
+SELECT 'super_admin', id, TRUE FROM admin_permissions;
+
+-- Admin gets most permissions except grant_permissions and manage_admins
+INSERT INTO admin_role_permissions (role, permission_id, granted)
+SELECT 'admin', id, TRUE FROM admin_permissions 
+WHERE permission_key NOT IN ('grant_permissions', 'manage_admins');
+
+-- Add viewer role
+ALTER TABLE users MODIFY COLUMN role ENUM('user', 'admin', 'super_admin', 'viewer') DEFAULT 'user';
+
+-- Viewer gets only view permissions
+INSERT INTO admin_role_permissions (role, permission_id, granted)
+SELECT 'viewer', id, TRUE FROM admin_permissions 
+WHERE permission_key IN ('view_users', 'view_posts', 'view_reports');

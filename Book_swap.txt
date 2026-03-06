@@ -1,0 +1,20 @@
+1. First setup your XAMPP server
+2. Make backend code in this location "C:\xampp\htdocs\folder_name"
+3. Create mail 16 digit password to send auto email for OTP
+4. Set this 16 digit password in below file :
+	C:\xampp\htdocs\book_swap_api\users
+	forget_password.php
+	register.php
+	reesnd_otp.php
+	validate_email.php
+	
+	C:\xampp\htdocs\book_swap_api\middleware
+	mailer.php
+	
+	C:\xampp\htdocs\book_swap_api\email_update
+	resend_email_otp.php
+	update_email.php
+4. Download and setup PHPMailer in "C:\xampp\htdocs\PHPMailer"
+5. Create database in XAMPP server using book_swap_db.txt file
+6. Install electron js
+7. get pubspec.yaml in android studio (Other necessary folder will install automatically)
