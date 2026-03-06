@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $mail->SMTPAuth   = true;
                 $mail->Username   = 'bookswapcommunity@gmail.com';
                 //Enter your 16 digit mail password to send email
-                $mail->Password   = 'tqya kzyt lqnt uuxg';
+                $mail->Password   = 'your mail password';
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port       = 587;
                 
@@ -160,4 +160,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 if (isset($connectNow)) {
     $connectNow->close();
 }
+
 ?>
