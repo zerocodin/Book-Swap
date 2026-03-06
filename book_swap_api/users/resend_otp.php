@@ -53,7 +53,7 @@ if($updateQuery->affected_rows > 0) {
         $mail->SMTPAuth   = true;
         $mail->Username   = 'bookswapcommunity@gmail.com';
         //Enter your 16 digit mail password to send email
-        $mail->Password   = 'tqya kzyt lqnt uuxg';
+        $mail->Password   = 'your mail passwrod';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 
@@ -84,4 +84,5 @@ if($updateQuery->affected_rows > 0) {
 }
 
 $updateQuery->close();
+
 ?>
