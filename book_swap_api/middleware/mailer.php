@@ -17,7 +17,7 @@ class Mailer {
         $this->mail->SMTPAuth = true;
         $this->mail->Username = 'bookswapcommunity@gmail.com';
         //Enter your 16 digit mail password to send email
-        $this->mail->Password = 'tqya kzyt lqnt uuxg'; 
+        $this->mail->Password = 'your mail password'; 
         $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $this->mail->Port = 587;
         $this->mail->setFrom('bookswapcommunity@gmail.com', 'Book Swap Community');
@@ -57,4 +57,5 @@ class Mailer {
         }
     }
 }
+
 ?>
